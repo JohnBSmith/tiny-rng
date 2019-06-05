@@ -1,5 +1,7 @@
 
-# Tiny RNG, a minimal random number generator
+## Tiny RNG, a minimal random number generator
+
+Warning: Not cryptographically secure.
 
 Examples:
 
