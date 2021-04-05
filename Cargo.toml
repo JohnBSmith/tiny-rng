@@ -7,7 +7,5 @@ license = "CC0-1.0"
 
 description = "Tiny RNG, a minimal random number generator"
 repository = "https://github.com/JohnBSmith/tiny-rng"
-
-
-
+readme = "README.md"
 
