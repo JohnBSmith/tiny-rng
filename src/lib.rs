@@ -62,35 +62,35 @@ pub trait Rand: Sized {
         Self::from_seed(time_seed)
     }
 
-    /// A sample from the uniform distribution on `0..u32::MAX`.
+    /// A sample from the uniform distribution on `0..=u32::MAX`.
     fn rand_u32(&mut self) -> u32;
 
-    /// A sample from the uniform distribution on `0..u8::MAX`.
+    /// A sample from the uniform distribution on `0..=u8::MAX`.
     #[inline]
     fn rand_u8(&mut self) -> u8 {
         self.rand_u32() as u8
     }
 
-    /// A sample from the uniform distribution on `0..u16::MAX`.
+    /// A sample from the uniform distribution on `0..=u16::MAX`.
     #[inline]
     fn rand_u16(&mut self) -> u16 {
         self.rand_u32() as u16
     }
 
-    /// A sample from the uniform distribution on `0..u64::MAX`.
+    /// A sample from the uniform distribution on `0..=u64::MAX`.
     #[inline]
     fn rand_u64(&mut self) -> u64 {
         (self.rand_u32() as u64) << 32 | (self.rand_u32() as u64)
     }
 
-    /// A sample from the uniform distribution on `0..usize::MAX`.
+    /// A sample from the uniform distribution on `0..=usize::MAX`.
     #[cfg(target_pointer_width = "32")]
     #[inline]
     fn rand_usize(&mut self) -> usize {
         self.rand_u32() as usize
     }
     
-    /// A sample from the uniform distribution on `0..usize::MAX`.
+    /// A sample from the uniform distribution on `0..=usize::MAX`.
     #[cfg(target_pointer_width = "64")]
     #[inline]
     fn rand_usize(&mut self) -> usize {
