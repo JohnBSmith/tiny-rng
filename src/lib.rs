@@ -34,6 +34,16 @@ fn main() {
 #[cfg(feature = "std")]
 extern crate std;
 
+fn wrapping_next_power_of_two_u32(x: u32) -> u32 {
+    const H: u32 = 1 << 31;
+    if x <= H {x.next_power_of_two()} else {0}
+}
+
+fn wrapping_next_power_of_two_u64(x: u64) -> u64 {
+    const H: u64 = 1 << 63;
+    if x <= H {x.next_power_of_two()} else {0}
+}
+
 /** Provided utilities.
 
 This interface permits to hide the used engine:
@@ -100,8 +110,7 @@ pub trait Rand: Sized {
     /// A sample from the uniform distribution on `0..m`.
     // Applies the idea of rejection sampling.
     fn rand_bounded_u32(&mut self, m: u32) -> u32 {
-        let mask = m.next_power_of_two().wrapping_sub(1);
-        // Todo: wrapping_next_power_of_two needed
+        let mask = wrapping_next_power_of_two_u32(m).wrapping_sub(1);
         loop {
             let x = mask & self.rand_u32();
             if x < m {return x;}
@@ -110,8 +119,7 @@ pub trait Rand: Sized {
 
     /// A sample from the uniform distribution on `0..m`.
     fn rand_bounded_u64(&mut self, m: u64) -> u64 {
-        let mask = m.next_power_of_two().wrapping_sub(1);
-        // Todo: wrapping_next_power_of_two needed
+        let mask = wrapping_next_power_of_two_u64(m).wrapping_sub(1);
         loop {
             let x = mask & self.rand_u64();
             if x < m {return x;}
