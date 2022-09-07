@@ -11,21 +11,19 @@ on the set of all permutations.
 ```
 use tiny_rng::{Rng, Rand};
 
-fn main() {
-    let mut rng = Rng::from_seed(0);
-    
-    // Throw a dice:
-    println!("{}", rng.rand_range_u32(1, 7));
+let mut rng = Rng::from_seed(0);
 
-    // Choose a random color:
-    let colors = ["red", "green", "blue"];
-    println!("{}", rng.choice(&colors));
+// Throw a dice:
+println!("{}", rng.rand_range_u32(1, 7));
 
-    // Shuffle an array:
-    let mut a = [1, 2, 3, 4];
-    rng.shuffle(&mut a);
-    println!("{:?}", a);
-}
+// Choose a random color:
+let colors = ["red", "green", "blue"];
+println!("{}", rng.choice(&colors));
+
+// Shuffle an array:
+let mut a = [1, 2, 3, 4];
+rng.shuffle(&mut a);
+println!("{:?}", a);
 ```
 */
 
@@ -48,6 +46,7 @@ fn wrapping_next_power_of_two_u64(x: u64) -> u64 {
 
 This interface permits to hide the used engine:
 ```
+# use tiny_rng::{Rng, Rand};
 fn rng_from_seed(seed: u64) -> impl Rand {
     Rng::from_seed(seed)
 }
@@ -167,6 +166,21 @@ pub trait Rand: Sized {
     fn rand_f64(&mut self) -> f64 {
         self.rand_u32() as f64 * 2.3283064365386963E-10
     }
+
+    #[cfg(feature = "std")]
+    /// A sample from the normal distribution with mean `mu` and
+    /// standard deviation `sigma`.
+    // Marsaglia polar method.
+    fn rand_normal_f64(&mut self, mu: f64, sigma: f64) -> f64 {
+        loop {
+            let u = 2.0*self.rand_f64() - 1.0;
+            let v = 2.0*self.rand_f64() - 1.0;
+            let s = u*u + v*v;
+            if s < 1.0 && s > 0.0 {
+                return mu + sigma*u*f64::sqrt(-2.0*f64::ln(s)/s);
+            }
+        }
+    }
     
     /// A sample from the uniform distribution on the non-empty slice.
     fn choice<'a, T>(&mut self, a: &'a [T]) -> &'a T {
@@ -207,18 +221,16 @@ Example:
 ```
 use tiny_rng::{Rng, Rand, rand_iter};
 
-fn main() {
-    let mut rng = Rng::from_seed(0);
-    for x in rand_iter(&mut rng, Rand::rand_u32).take(10) {
-        println!("0x{:08x}", x);
-    }
+let mut rng = Rng::from_seed(0);
+for x in rand_iter(&mut rng, Rand::rand_u32).take(10) {
+    println!("0x{:08x}", x);
 }
 ```
 */
-pub fn rand_iter<'a, T: 'static, Generator: Rand>(
-    rng: &'a mut Generator,
+pub fn rand_iter<T: 'static, Generator: Rand>(
+    rng: &mut Generator,
     rand: fn(&mut Generator) -> T
-) -> impl 'a + Iterator<Item = T>
+) -> impl '_ + Iterator<Item = T>
 {
     core::iter::from_fn(move || Some(rand(rng)))
 }
@@ -287,20 +299,17 @@ impl Rng {
     /** A helper function to turn random number generation into an iterator.
 
     Example:
-
     ```
     use tiny_rng::{Rng, Rand};
 
-    fn main() {
-        let mut rng = Rng::from_seed(0);
-        for x in rng.iter(Rand::rand_u32).take(10) {
-            println!("0x{:08x}", x);
-        }
+    let mut rng = Rng::from_seed(0);
+    for x in rng.iter(Rand::rand_u32).take(10) {
+        println!("0x{:08x}", x);
     }
     ```
     */
-    pub fn iter<'a, T: 'static>(&'a mut self, rand: fn(&mut Self) -> T)
-    -> impl 'a + Iterator<Item = T>
+    pub fn iter<T: 'static>(&mut self, rand: fn(&mut Self) -> T)
+    -> impl '_ + Iterator<Item = T>
     {
         rand_iter(self, rand)
     }
@@ -316,7 +325,7 @@ mod tests {
     }
 
     #[test]
-    fn main() {
+    fn test0() {
         rng_test::<Rng>();
     }
 }
