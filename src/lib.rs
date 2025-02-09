@@ -157,19 +157,24 @@ pub trait Rand: Sized {
         a + self.rand_bounded_u64((b - a) as u64) as i64
     }
 
-    /// A sample from the uniform distribution on the interval [0, 1).
+    /// A sample from the uniform distribution on the interval [0, 1).<br>
+    /// ⚠️ WARNING: Achieving uniform distribution of floats is complex and
+    /// requires analysis yet to be accomplished.
     fn rand_f32(&mut self) -> f32 {
         self.rand_u32() as f32 * 2.3283064E-10
     }
 
-    /// A sample from the uniform distribution on the interval [0, 1).
+    /// A sample from the uniform distribution on the interval [0, 1).<br>
+    /// ⚠️ WARNING: Achieving uniform distribution of floats is complex and
+    /// requires analysis yet to be accomplished.
     fn rand_f64(&mut self) -> f64 {
         self.rand_u32() as f64 * 2.3283064365386963E-10
     }
 
     #[cfg(feature = "std")]
     /// A sample from the normal distribution with mean `mu` and
-    /// standard deviation `sigma`.
+    /// standard deviation `sigma`.<br>
+    /// ⚠️ WARNING: depends on rand_f64, which requires further analysis.
     // Marsaglia polar method.
     fn rand_normal_f64(&mut self, mu: f64, sigma: f64) -> f64 {
         loop {
@@ -241,7 +246,7 @@ numbers of relatively high quality, which passes the most important
 statistical tests. The generator is said to have a period length of
 2^128-1 and to pass "BigCrush" from the test suite "TestU01". It should
 be noted that this is by no means a cryptographic generator. The
-following implementation is as described in Vignas article [1], with
+following implementation is as described in Vigna's article [1], with
 the assignment a=23, b=17, c=26 described there as favorable, and is
 also listed that way in the Firefox source code [2] and in
 Wikipedia [3][4]. The internal state may be arbitrary,
